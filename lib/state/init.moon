@@ -11,7 +11,7 @@ setmetatable state, state
 state.new = => {}
 
 state.set = (path, args) =>
-  self.state.unload! if self.state.unload
+  @current.unload! if @current.unload
 
   matches = {}
 
@@ -22,26 +22,26 @@ state.set = (path, args) =>
 
   package.loaded[path] = false
 
-  self.state = require path
+  @current = require path
 
-  self.state.load args if self.state.load
-  self
+  @current.load args if @current.load
+  @
 
 
 state.load = =>
-  self.state\load!
-  self
+  @current\load! if @current.load
+  @
 
 state.update = (dt) =>
-  self.state\update dt if self.state.update
-  self
+  @current\update dt if @current.update
+  @
 
 state.draw = =>
-  self.state.draw! if self.state.update
-  self
+  @current.draw! if @current.update
+  @
 
 state.press = (key, isrepeat) =>
-  self.state.press key, isrepeat if self.state.press
-  self
+  @current.press key, isrepeat if @current.press
+  @
 
 state

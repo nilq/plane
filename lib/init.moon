@@ -14,7 +14,7 @@ with love
     .load !                      if .load
     .timer.step!                 if .timer
 
-    state\set "src/game"
+    state\set "src/core"
     state\load!
 
     while true

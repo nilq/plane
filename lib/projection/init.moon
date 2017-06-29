@@ -7,7 +7,7 @@ project = (fov, point) ->
   for coord in *point
     point2[#point2 + 1] = coord * scale
 
-    unless #point2 - (#point2 - 1)
+    if #point2 - (#point - 1) == 0
       return point2, scale
 
 -- projectn recursively decrements amount of dimensions
@@ -16,7 +16,7 @@ project = (fov, point) ->
 projectn = (dimension, fov, point) ->
   point2, scale = project fov, point
 
-  unless dimension - #point2
+  if dimension - #point2 == 0
     return point2, scale
   else
     projectn dimension, fov, point2
