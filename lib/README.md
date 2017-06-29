@@ -1,10 +1,15 @@
 # plane
+## lib
 library containing costum core run function for LOVE, as well as
 kinda cool 3d stuff.
 
 - init
 
 has `run` ..
+
+- state/
+
+has program state handling table
 
 - projection/
 

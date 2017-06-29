@@ -1,2 +1,5 @@
 # plane
-projection stuff
+## lib
+### projection
+
+*insert math here*
