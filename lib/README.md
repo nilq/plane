@@ -7,6 +7,10 @@ kinda cool 3d stuff.
 
 has `run` ..
 
+- util/
+
+math utilities
+
 - state/
 
 has program state handling table

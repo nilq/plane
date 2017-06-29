@@ -5,11 +5,11 @@ r = 100
 test_ball = ->
   ball = {
     x: math.random 200, 1000
-    y: math.random 0, 600
+    y: 500
     z: math.random -400, 400
 
     a: 0
-    s: math.random -15, 15
+    s: 10
   }
 
   if ball.s == 0

@@ -1,4 +1,5 @@
 export state = require "lib/state"
+export util  = require "lib/util"
 
 with love
   .graphics.setDefaultFilter "nearest", "nearest"
