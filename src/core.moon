@@ -1,38 +1,41 @@
 export plane = state\new!
 
-r = 100
-
-test_ball = ->
-  ball = {
-    x: math.random 200, 1000
-    y: 500
-    z: math.random -400, 400
-
-    a: 0
-    s: 10
-  }
-
-  if ball.s == 0
-    ball = test_ball!
-
-  ball
-
 plane.load = =>
   with plane
-    .balls = {}
+    .w = 1000
+    .h = 1000
+    .d = 1000
 
-    for i = 1, 100
-      .balls[#.balls + 1] = test_ball! 
+    .x = -.w / 2
+    .y = 500
+    .z = .w
   
 plane.update = (dt) =>
-  for ball in *plane.balls
-    ball.a += ball.s * dt
-  
+  s = 400
+  with love.keyboard
+    if .isDown "w"
+      plane.z += dt * s
+    if .isDown "s"
+      plane.z -= dt * s
+    
+    if .isDown "d"
+      plane.x += dt * s
+    if .isDown "a"
+      plane.x -= dt * s
+
+    if .isDown "lshift"
+      plane.y += dt * s
+    if .isDown "space"
+      plane.y -= dt * s
+
 plane.draw = =>
+  love.graphics.push!
+  love.graphics.translate love.graphics.getWidth! / 2, love.graphics.getHeight! / 2
+ 
   with _projection.graphics
-    for ball in *plane.balls
-      love.graphics.setColor (math.random 0, 255), (math.random 0, 255), math.random 0, 255
-      
-      .circle _fov, "fill", {ball.x + r * (math.cos ball.a), ball.y, ball.z + r * math.sin ball.a}, 10
+    love.graphics.setColor 200, 200, 200
+    .square3h _fov, "line", {plane.x, plane.y, plane.z}, plane.w, plane.h, plane.d
+
+  love.graphics.pop!
 
 plane
