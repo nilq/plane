@@ -1,18 +1,31 @@
-make = (cellw, cellh) ->
+make = ->
   env = {
     food: {}
+    heat: {}
   }
 
-  with env
+  env.genfood = (cellw, cellh) =>
+    with env
+      for x = 0, cellw
+        a = {}
+        for y = 0, cellh
+          if 0 == math.random 0, 10
+            a[y] = math.random 0, 255
+          else
+            a[y] = 0
+
+        @food[x] = a
+    env
+  
+  env.genheat = (cellw, cellh) =>
     for x = 0, cellw
       a = {}
       for y = 0, cellh
-        if 0 >= math.random -2, 1
-          a[y] = 0
-        else
-          a[y] = 1
+        a[y] = util.randf 0, 1
 
-      .food[x] = a
+      @heat[x] = a
+    env
+
   env
 
 {

@@ -40,7 +40,7 @@ randi = (a, b) ->
 randn = (mu, sigma) ->
   mu + gauss_random! * sigma
 
-util = {
+{
   :deep_copy
   :gauss_random
   :randf

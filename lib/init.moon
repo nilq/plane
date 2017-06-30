@@ -7,11 +7,7 @@ with love
   .graphics.setDefaultFilter "nearest", "nearest"
   .graphics.setBackgroundColor 255, 255, 255
 
-  grain           = shine.filmgrain!
-  grain.opacity   = 0.2
-  grain.grainsize = 10
-
-  post_effect = grain\chain shine.crt!
+  post_effect = shine.scanlines!\chain shine.crt!
 
   .run = ->
     dt = 0

@@ -12,7 +12,7 @@ plane.load = =>
     .y = 500
     .z = .w
 
-    .env    = env.make 40, 40
+    .env    = (env.make!\genfood 40, 40)\genheat 5, 5
     .status = ui.status.make 20, 20
   
 plane.update = (dt) =>
@@ -36,21 +36,30 @@ plane.update = (dt) =>
 plane.draw = =>
   love.graphics.push!
   love.graphics.translate love.graphics.getWidth! / 2, love.graphics.getHeight! / 2
- 
-  with _projection.graphics
-    love.graphics.setColor 200, 200, 200
-    .square3d _fov, "line", {plane.x, plane.y, plane.z}, plane.w, plane.h, plane.d
+
+  with love.graphics
+    .setColor 200, 200, 200
+    .rectangle "line", plane.x, plane.y, plane.w, plane.h
 
     foodlen = #plane.env.food
 
     for x = 0, #plane.env.food - 1
-      for y = 1, #plane.env.food[1]
-        continue if plane.env.food[x][y] == 0
-        love.graphics.setColor 100, 255, 100, plane.env.food[x][y] * 200
-        .cube _fov, "fill", {plane.x + x * (plane.w / foodlen), plane.y + y * (plane.h / foodlen), plane.z}, plane.w / foodlen, plane.h / foodlen, plane.h / foodlen + 10
+      for y = 0, #plane.env.food[1] - 1
+        .setColor 100, 255, 100, plane.env.food[x][y] * 200
+        .rectangle "fill", plane.x + x * (plane.w / foodlen), plane.y + y * (plane.h / foodlen), plane.w / foodlen, plane.h / foodlen
 
-  love.graphics.pop!
+    heatlen = #plane.env.heat
 
-  plane.status\draw!
+    for x = 0, #plane.env.heat - 1
+      for y = 0, #plane.env.heat[1] - 1
+        .setColor plane.env.heat[x][y] * 255, 200, 255 - plane.env.heat[x][y] * 255, 100
+        .rectangle "fill", plane.x + x * (plane.w / heatlen), plane.y + y * (plane.h / heatlen), plane.w / heatlen, plane.h / heatlen
+
+        .setColor 200, 200, 200
+        .rectangle "line", plane.x + x * (plane.w / heatlen), plane.y + y * (plane.h / heatlen), plane.w / heatlen, plane.h / heatlen
+
+    .pop!
+
+    --plane.status\draw!
 
 plane
