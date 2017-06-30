@@ -43,6 +43,10 @@ plane.draw = =>
   with projection.graphics
     love.graphics.setColor 200, 200, 200
     .square3d fov, "line", {plane.x, plane.y, plane.z}, plane.w, plane.h
+    .square3v fov, "line", {plane.x, plane.y, plane.z - plane.d}, plane.w, plane.h
+    .square3v fov, "line", {plane.x + plane.w, plane.y, plane.z - plane.d}, plane.w, plane.h
+    .square3h fov, "line", {plane.x , plane.y, plane.z - plane.d}, plane.w, plane.h
+    .square3h fov, "line", {plane.x , plane.y + plane.h, plane.z - plane.d}, plane.w, plane.h
 
   with projection.graphics
     -- food fields
