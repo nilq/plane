@@ -7,7 +7,7 @@ with love
   .graphics.setDefaultFilter "nearest", "nearest"
   .graphics.setBackgroundColor 255, 255, 255
 
-  post_effect = shine.scanlines!\chain shine.crt!
+  post_effect = shine.scanlines!\chain (shine.crt!\set "x", 0.04)\set "y", 0.045
 
   .run = ->
     dt = 0

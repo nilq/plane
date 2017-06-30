@@ -103,7 +103,6 @@ cube = (fov, mode, p1, width, height, depth) ->
   square3h fov, mode, {p1[1],         p1[2] - height, p1[3]},         width, height
   square3v fov, mode, {p1[1],         p1[2] - height, p1[3]},         width, height
   square3v fov, mode, {p1[1] + width, p1[2] - height, p1[3]},         width, height
-  square3d fov, mode, {p1[1],         p1[2] - height, p1[3] + depth}, width, height
   square3d fov, mode, {p1[1],         p1[2] - height, p1[3]},         width, height
 
 {

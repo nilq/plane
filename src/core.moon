@@ -49,26 +49,6 @@ plane.draw = =>
     .square3h fov, "line", {plane.x , plane.y + plane.h, plane.z - plane.d}, plane.w, plane.h
 
   with projection.graphics
-    -- food fields
-    foodlen = #plane.env.food
-    foodw   = plane.w / foodlen
-    foodh   = plane.h / foodlen
-
-    for x = 0, #plane.env.food - 1
-      for y = 0, #plane.env.food[1] - 1
-        love.graphics.setColor 100, 255, 100, plane.env.food[x][y] * 200
-        .square3d fov, "fill", {plane.x + x * (plane.w / foodlen), plane.y + y * (plane.h / foodlen), plane.z}, foodw, foodh
-
-        if plane.env.food[x][y] > 0.001
-
-          top = {plane.x + x * (plane.w / foodlen) + foodw / 2, plane.y + y * (plane.h / foodlen) + foodh / 2, plane.z - 100}
-          
-          love.graphics.setColor 150, 150, 150
-          .line fov, {plane.x + x * (plane.w / foodlen) + foodw / 2, plane.y + y * (plane.h / foodlen) + foodh / 2, plane.z}, top
-
-          love.graphics.setColor 255, 150, 150
-          .print fov, (string.format "%.1f", plane.env.food[x][y] * 100) .. "%", top
-
     -- organisms
     for i = 0, #plane.env.agents
       agent     = plane.env.agents[i]
@@ -93,6 +73,27 @@ plane.draw = =>
 
         love.graphics.setColor 200, 200, 200
         .square3d fov, "line", {plane.x + x * (plane.w / heatlen), plane.y + y * (plane.h / heatlen), plane.z}, plane.w / heatlen, plane.h / heatlen
+
+
+    -- food fields
+    foodlen = #plane.env.food
+    foodw   = plane.w / foodlen
+    foodh   = plane.h / foodlen
+
+    for x = 0, #plane.env.food - 1
+      for y = 0, #plane.env.food[1] - 1
+        love.graphics.setColor 100, 255, 100, plane.env.food[x][y] * 190
+        .cube fov, "fill", {plane.x + x * (plane.w / foodlen), plane.y + (y + 1) * (plane.h / foodlen), plane.z - 1}, foodw, foodh, 1
+
+        if plane.env.food[x][y] > 0.001
+
+          top = {plane.x + x * (plane.w / foodlen) + foodw / 2, plane.y + y * (plane.h / foodlen) + foodh / 2, plane.z - 100}
+          
+          love.graphics.setColor 150, 150, 150
+          .line fov, {plane.x + x * (plane.w / foodlen) + foodw / 2, plane.y + y * (plane.h / foodlen) + foodh / 2, plane.z}, top
+
+          love.graphics.setColor 255, 150, 150
+          .print fov, (string.format "%.1f", plane.env.food[x][y] * 100) .. "%", top
 
     love.graphics.pop!
 
