@@ -2,10 +2,8 @@ return_v = false
 value_v  = 0
 
 deep_copy = (org) ->
-  org_type = type org
-  copy
-  if org_type == "table"
-    copy = {}
+  copy = {}
+  if "table" == type org
     for k, v in next, org, nil
         copy[deep_copy k] = deep_copy org
     setmetatable copy, deep_copy getmetatable org
@@ -40,7 +38,7 @@ randi = (a, b) ->
 randn = (mu, sigma) ->
   mu + gauss_random! * sigma
 
-util = {
+{
   :deep_copy
   :gauss_random
   :randf
