@@ -1,7 +1,10 @@
+agent = require "src/agent"
+
 make = ->
   env = {
-    food: {}
-    heat: {}
+    food:   {}
+    heat:   {}
+    agents: {}
   }
 
   env.genfood = (cellw, cellh) =>
@@ -24,6 +27,11 @@ make = ->
         a[y] = util.randf 0, 1
 
       @heat[x] = a
+    env
+
+  env.genagents = (n, w, h, z) =>
+    for x = 0, n
+      @agents[x] = agent.random w, h, z
     env
 
   env

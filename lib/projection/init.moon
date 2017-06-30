@@ -55,6 +55,12 @@ square3 = (fov, mode, p1, p2, p3, p4) ->
       triangle fov, "fill", p2, p3, p4
       triangle fov, "fill", p3, p4, p1
     
+    when "cross?"
+      triangle fov, "fill", p1, p2, p3
+      triangle fov, "fill", p2, p3, p4
+      triangle fov, "fill", p3, p4, p1
+      triangle fov, "fill", p1, p3, p4
+    
     when "line"
       line fov, p1, p2
       line fov, p2, p3
