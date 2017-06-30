@@ -1,5 +1,6 @@
 export plane = state\new!
 export env   = require "src/env"
+export ui    = require "src/ui"
 
 plane.load = =>
   with plane
@@ -11,7 +12,8 @@ plane.load = =>
     .y = 500
     .z = .w
 
-    .env = env.make 40, 40
+    .env    = env.make 40, 40
+    .status = ui.status.make 20, 20
   
 plane.update = (dt) =>
   s = 400 * ((plane.z + 1000) / 1000)
@@ -48,5 +50,7 @@ plane.draw = =>
         .cube _fov, "fill", {plane.x + x * (plane.w / foodlen), plane.y + y * (plane.h / foodlen), plane.z}, plane.w / foodlen, plane.h / foodlen, plane.h / foodlen + 10
 
   love.graphics.pop!
+
+  plane.status\draw!
 
 plane
