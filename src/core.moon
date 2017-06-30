@@ -8,14 +8,46 @@ plane.load = =>
     .h = 1700
     .d = 1000
 
+    .count = 0
+    .epoch = 0
+
     .x = -.w / 2
     .y = 500
     .z = .w
 
-    .env    = ((env.make!\genfood 30, 30)\genheat 1, 1)\genagents 100, .w, .h, .z
+    .env    = ((env.make!\genfood 15, 15)\genheat 1, 1)\genagents 300, .w, .h, .z
     .status = ui.status.make 20, 20
   
 plane.update = (dt) =>
+  plane.count += 1
+
+  if @count >= 10000
+    plane.count  = 0
+    plane.epoch += 1
+  
+  if @count % 60 == 0
+    fx = util.randi 0, #plane.env.food
+    fy = util.randi 0, #plane.env.food[1]
+
+    plane.env.food[fx][fy] = 0.5 -- todo; store this value
+
+  -- starvation
+  for i = 0, #plane.env.agents
+    agent = plane.env.agents[i]
+
+    loss = 0.0002 + 0.0001 * ((math.abs agent.w1) + (math.abs agent.w2)) / 2
+    loss = 0.001 if agent.w1 < 0.1 and agent.w2 < 0.1
+
+    if agent.boosting
+      agent.health -= loss * 4
+    else
+      agent.health -= loss
+
+  -- remove deads
+  for i = 1, #plane.env.agents
+    continue if not plane.env.agents[i]
+    table.remove plane.env.agents, i if plane.env.agents[i].health <= 0
+
   s = math.abs 400 * ((plane.z + 1000) / 1000)
   with love.keyboard
     if .isDown "space"
@@ -52,7 +84,7 @@ plane.draw = =>
     -- organisms
     for i = 0, #plane.env.agents
       agent     = plane.env.agents[i]
-      pos = {plane.x + agent.pos[1], plane.y + agent.pos[2], plane.z - 1}
+      pos = {plane.x + agent.pos[1], plane.y + agent.pos[2], plane.z - 10}
 
       love.graphics.setColor agent.color[1], agent.color[2], agent.color[3] 
       .circle fov, "fill", pos, 10
@@ -61,7 +93,23 @@ plane.draw = =>
       .circle fov, "line", pos, 10
 
       love.graphics.setColor 0, 0, 0
-      .line fov, pos, {pos[1] + (30 * math.cos agent.angle), pos[2] + (30 * math.sin agent.angle), pos[3]}
+      .line fov, pos, {pos[1] + (15 * math.cos agent.angle), pos[2] + (15 * math.sin agent.angle), pos[3] - 5}
+
+      love.graphics.setColor agent.color[1], agent.color[2], agent.color[3] 
+      .circle fov, "fill", {pos[1], pos[2], pos[3] - 10}, 10
+
+      love.graphics.setColor 150, 150, 150
+      .circle fov, "line", {pos[1], pos[2], pos[3] - 10}, 10
+      
+
+      --love.graphics.setColor 150, 150, 150
+      --.line fov, pos, {pos[1], pos[2], plane.z - 100}
+
+      --love.graphics.setColor 150, 150, 150
+      --.square3d fov, "fill", {pos[1], pos[2], plane.z - 50}, 5, 25
+
+      --love.graphics.setColor 150, 255, 150
+      --.square3d fov, "fill", {pos[1], pos[2], plane.z - 50}, 5, agent.health * 25
 
     -- heat fields
     heatlen = #plane.env.heat
@@ -73,7 +121,6 @@ plane.draw = =>
 
         love.graphics.setColor 200, 200, 200
         .square3d fov, "line", {plane.x + x * (plane.w / heatlen), plane.y + y * (plane.h / heatlen), plane.z}, plane.w / heatlen, plane.h / heatlen
-
 
     -- food fields
     foodlen = #plane.env.food

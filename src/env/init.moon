@@ -12,7 +12,7 @@ make = ->
       for x = 0, cellw
         a = {}
         for y = 0, cellh
-          if 0 == math.random 0, 10
+          if 0 == math.random 0, 5
             a[y] = math.random 0, 0.5
           else
             a[y] = 0
