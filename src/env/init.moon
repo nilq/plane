@@ -13,7 +13,7 @@ make = ->
         a = {}
         for y = 0, cellh
           if 0 == math.random 0, 10
-            a[y] = math.random 0, 255
+            a[y] = math.random 0, 0.5
           else
             a[y] = 0
 

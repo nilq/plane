@@ -1,9 +1,9 @@
 --- bad oop approach on neural net
 -- brain settings
-brain_size  = 150
+brain_size  = 20
 connections = 4
-inputs      = 20
-outputs     = 9
+inputs      = 2
+outputs     = 2
 
 -- neuron representation
 neuron      = {}

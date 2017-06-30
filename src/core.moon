@@ -16,12 +16,12 @@ plane.load = =>
     .status = ui.status.make 20, 20
   
 plane.update = (dt) =>
-  s = 400 * ((plane.z + 1000) / 1000)
+  s = math.abs 400 * ((plane.z + 1000) / 1000)
   with love.keyboard
     if .isDown "space"
-      plane.z += dt * s
+      plane.z += dt * 400
     if .isDown "lshift"
-      plane.z -= dt * s
+      plane.z -= dt * 400
     
     if .isDown "a"
       plane.x += dt * s
@@ -34,7 +34,7 @@ plane.update = (dt) =>
       plane.y -= dt * s
 
   for i = 0, #plane.env.agents
-    plane.env.agents[i]\update!
+    plane.env.agents[i]\update plane
 
 plane.draw = =>
   love.graphics.push!
@@ -51,14 +51,25 @@ plane.draw = =>
   with projection.graphics
     -- food fields
     foodlen = #plane.env.food
+    foodw   = plane.w / foodlen
+    foodh   = plane.h / foodlen
 
     for x = 0, #plane.env.food - 1
       for y = 0, #plane.env.food[1] - 1
         love.graphics.setColor 100, 255, 100, plane.env.food[x][y] * 200
-        .square3d fov, "fill", {plane.x + x * (plane.w / foodlen), plane.y + y * (plane.h / foodlen), plane.z}, plane.w / foodlen, plane.h / foodlen
+        .square3d fov, "fill", {plane.x + x * (plane.w / foodlen), plane.y + y * (plane.h / foodlen), plane.z}, foodw, foodh
+
+        if plane.env.food[x][y] > 0.001
+
+          top = {plane.x + x * (plane.w / foodlen) + foodw / 2, plane.y + y * (plane.h / foodlen) + foodh / 2, plane.z - 100}
+          
+          love.graphics.setColor 150, 150, 150
+          .line fov, {plane.x + x * (plane.w / foodlen) + foodw / 2, plane.y + y * (plane.h / foodlen) + foodh / 2, plane.z}, top
+
+          love.graphics.setColor 255, 150, 150
+          .print fov, (string.format "%.1f", plane.env.food[x][y] * 100) .. "%", top
 
     -- organisms
-
     for i = 0, #plane.env.agents
       agent     = plane.env.agents[i]
       pos = {plane.x + agent.pos[1], plane.y + agent.pos[2], plane.z - 1}

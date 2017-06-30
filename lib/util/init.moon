@@ -38,10 +38,18 @@ randi = (a, b) ->
 randn = (mu, sigma) ->
   mu + gauss_random! * sigma
 
+cap = (n) ->
+  if n < 0
+    return 0
+  if n > 1
+    return 1
+  n
+
 {
   :deep_copy
   :gauss_random
   :randf
   :randi
   :randn
+  :cap
 }

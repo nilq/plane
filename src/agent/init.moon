@@ -25,6 +25,8 @@ random = (w, h, z) ->
     .w1       = 0 -- wheel1
     .w2       = 0 -- wheel2
     .boosting = false
+    .health   = 1 + util.randf 0, 0.1
+    .herb     = util.randf 0, 1
 
     .angle = util.randf -math.pi, math.pi
 
@@ -39,9 +41,10 @@ random = (w, h, z) ->
     .tick = =>
       @brain\tick @inp, @out
     
-    .update = =>
+    .update = (plane) =>
+      @input plane
       @tick!
-      @get_brain!
+      @output!
 
       -- movement
       whp1 = { -- wheel position
@@ -81,8 +84,36 @@ random = (w, h, z) ->
 
       @pos[1] %= w
       @pos[2] %= h
+
+      @eat plane
+
+    .eat = (plane) =>
+      cx = math.floor @pos[1] / (plane.w / #plane.env.food)
+      cy = math.floor @pos[2] / (plane.h / #plane.env.food)
+
+      food = plane.env.food[cx][cy]
+
+      if food > 0 and @health < 2 -- 2 is maxima
+        itk       = math.min food, 0.00325 -- intake constant
+        speed_mul = (1 - (math.abs @w1 + math.abs @w2) / 2) / 2 + 0.5
+
+        itk *= @herb^2 * speed_mul
+
+        @health  += itk
+
+        plane.env.food[cx][cy] -= math.min food, 0.003 -- food waste constant
     
-    .get_brain = =>
+    .input = (plane) =>
+      -- health
+      @inp[1] = util.cap @health / 2
+
+      -- food
+      cx = math.floor @pos[1] / (plane.w / #plane.env.food)
+      cy = math.floor @pos[2] / (plane.h / #plane.env.food)
+
+      @inp[2] = plane.env.food[cx][cy] / 0.5 -- food maxima is 0.5
+
+    .output = =>
       @w1 = @out[1]
       @w2 = @out[2]
   

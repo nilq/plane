@@ -38,6 +38,13 @@ circle = (fov, mode, p1, radius, segments) ->
   with love.graphics
     .circle mode, pn1[1] * s1, pn1[2] * s1, radius * s1, segments
 
+-- text on point
+print = (fov, msg, p1) ->
+  pn1, s1 = projectn 2, fov, p1
+
+  with love.graphics
+    .print msg, pn1[1] * s1, pn1[2] * s1, 0, s1, s1
+
 -- triangle draws a 2d triangle between given arbitray dimensional points
 -- number -> string -> table -> table -> table -> nil
 triangle = (fov, mode, p1, p2, p3) ->
@@ -112,5 +119,6 @@ cube = (fov, mode, p1, width, height, depth) ->
     :square3v
     :square3d
     :cube
+    :print
   }
 }
