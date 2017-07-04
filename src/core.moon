@@ -34,12 +34,21 @@ plane.update = (dt) =>
 
     plane.env.food[fx][fy] = 0.5 -- todo; store this value
 
-  -- starvation
+  -- starvation & sweat
   for i = 0, #plane.env.agents
     agent = plane.env.agents[i]
 
     loss = 0.0002 + 0.0001 * ((math.abs agent.w1) + (math.abs agent.w2)) / 2
     loss = 0.001 if agent.w1 < 0.1 and agent.w2 < 0.1
+
+    cx = math.floor agent.pos[1] / (plane.w / #plane.env.heat)
+    cy = math.floor agent.pos[2] / (plane.h / #plane.env.heat[1])
+
+    heat = plane.env.food[cx][cy]
+
+    print math.abs heat - agent.fur
+
+    loss += .001 * math.abs heat - agent.fur if 0.5 < math.abs heat - agent.fur
 
     if agent.boosting
       agent.health -= loss * 4
@@ -80,7 +89,8 @@ plane.update = (dt) =>
 
   for i = 0, #plane.env.agents
     continue unless plane.env.agents[i]
-    table.remove plane.env.agents, i if plane.env.agents[i].health <= 0
+    if plane.env.agents[i].health <= 0
+      table.remove plane.env.agents, i
 
   s = math.abs 400 * ((plane.z - 1000) / 1000)
   with love.keyboard
@@ -98,6 +108,16 @@ plane.update = (dt) =>
       plane.y += dt * s
     if .isDown "s"
       plane.y -= dt * s
+
+    if .isDown "up"
+      for x = 0, #plane.env.heat
+        for y = 0, #plane.env.heat[1]
+          plane.env.heat[x][y] += dt / 2
+
+    if .isDown "down"
+      for x = 0, #plane.env.heat
+        for y = 0, #plane.env.heat[1]
+          plane.env.heat[x][y] -= dt / 2
 
   for i = 0, #plane.env.agents
     plane.env.agents[i]\update plane
@@ -159,6 +179,9 @@ plane.draw = =>
       .circle fov, "line", eye_pos1, 3
       .circle fov, "line", eye_pos2, 3
 
+      love.graphics.setColor 255, 200, agent.fur * 255, math.abs agent.fur * 255
+      .circle fov, "fill", {pos[1], pos[2], pos[3]}, 12
+
       love.graphics.setColor agent.color[1], agent.color[2], agent.color[3]
       .circle fov, "fill", pos, 10
 
@@ -212,5 +235,12 @@ plane.draw = =>
     love.graphics.pop!
 
     plane.status\draw!
+
+plane.press = (key) =>
+  if key == "return"
+    fx = util.randi 0, #plane.env.food
+    fy = util.randi 0, #plane.env.food[1]
+
+    plane.env.food[fx][fy] = 1
 
 plane

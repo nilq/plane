@@ -37,11 +37,11 @@ state.update = (dt) =>
   @
 
 state.draw = =>
-  @current.draw! if @current.update
+  @current\draw! if @current.update
   @
 
 state.press = (key, isrepeat) =>
-  @current.press key, isrepeat if @current.press
+  @current\press key, isrepeat if @current.press
   @
 
 state

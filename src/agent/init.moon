@@ -37,6 +37,8 @@ random = (w, h, z) ->
     .sound_mul = 0
     .gen_count = 0
 
+    .fur = util.randf -1, 1
+
     .rep_count = rep_rate .herb
 
     .clock_f1 = util.randf 5, 100
@@ -322,6 +324,14 @@ random = (w, h, z) ->
       @mut_rate1 = 0.025 if @mut_rate1 < 0.025
 
       baby.herb = util.cap @herb, mr2 * 4
+
+      baby.fur = @fur
+
+      if mr * 5 > util.randf 0, 1
+        baby.fur = util.randf baby.fur, mr2
+
+      baby.clock_f1 = @clock_f1
+      baby.clock_f2 = @clock_f2
 
       if mr * 5 > util.randf 0, 1
         baby.clock_f1 = util.randf baby.clock_f1, mr2
