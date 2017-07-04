@@ -1,9 +1,9 @@
 --- bad oop approach on neural net
 -- brain settings
-brain_size  = 20
-connections = 4
-inputs      = 2
-outputs     = 2
+brain_size  = 90
+connections = 3
+inputs      = 20
+outputs     = 9
 
 -- neuron representation
 neuron      = {}
@@ -28,7 +28,7 @@ neuron.make = ->
       .id[i] = util.randi 1, inputs if 0.2 > util.randi 1, inputs
 
       .notted[i] = 0 == util.randi 0, 1
-    
+
     .bias   = util.randf -1, 1
     .target = 0
     .out    = 0
@@ -37,6 +37,11 @@ neuron.make = ->
 
 -- damp weighted recurrent and/or neural network
 dwraonn      = {}
+dwraonn.from = (other) ->
+  brain = dwraonn.make!
+  brain.neurons = table.deepcopy other.neurons
+  brain
+
 dwraonn.make = ->
   brain = {}
 
@@ -47,19 +52,19 @@ dwraonn.make = ->
       a = neuron.make!
 
       .neurons[i] = a
-      
+
       for j = 0, connections
         a.id[j] = 1  if 0.05 > util.randf 0, 1
         a.id[j] = 5  if 0.05 > util.randf 0, 1
         a.id[j] = 12 if 0.05 > util.randf 0, 1
         a.id[j] = 4  if 0.05 > util.randf 0, 1
-        
+
         a.id[j] = util.randi 1, inputs if i < brain_size / 2
-  
+
     .tick = (input, output) =>
       for i = 0, inputs
         .neurons[i].out = input[i]
-      
+
       for i = inputs, brain_size
         a = .neurons[i]
 
@@ -74,7 +79,7 @@ dwraonn.make = ->
               val = 1 - val
 
             res *= val
-            
+
           res     *= a.bias
           a.target = res
         else
@@ -86,24 +91,46 @@ dwraonn.make = ->
 
             if a.notted[j]
               val = 1 - val
-            
+
             res += val * a.w[j]
-          
+
           res     += a.bias
           a.target = res
-        
+
         if a.target < 0
           a.target = 0
         else
           if a.target > 1
             a.target = 1
-      
+
       for i = inputs, brain_size
         a      = .neurons[i]
         a.out += (a.target - a.out) * a.kp
-      
+
       for i = 1, outputs
         output[i] = .neurons[brain_size - i].out
+
+  brain.mutate = (mr, mr2) =>
+    for i = 0, brain_size
+      if mr * 3 > util.randf 0, 1
+        @neurons[i].bias += util.randn 0, mr2
+
+      if mr * 3 > util.randf 0, 1
+        rc = util.randi 0, connections
+
+        @neurons[i].w[rc] += util.randn 0, mr2
+        @neurons[i].w[rc]  = 0.01 if @neurons[i].w[rc] > 0.01
+
+      if mr > util.randf 0, 1
+        rc = util.randi 0, connections
+        ri = util.randi 0, brain_size
+
+        @neurons[i].id[rc] = ri
+
+      if mr > util.randf 0, 1
+        rc = util.randi 0, connections
+
+        @neurons[i].type = 1 - @neurons[i].type
 
   brain
 

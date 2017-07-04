@@ -7,6 +7,9 @@ make = ->
     agents: {}
   }
 
+  env.spawn = (a) =>
+    @agents[#@agents + 1] = a
+
   env.genfood = (cellw, cellh) =>
     with env
       for x = 0, cellw
@@ -19,7 +22,7 @@ make = ->
 
         @food[x] = a
     env
-  
+
   env.genheat = (cellw, cellh) =>
     for x = 0, cellw
       a = {}

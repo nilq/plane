@@ -1,12 +1,12 @@
 return_v = false
 value_v  = 0
 
-deep_copy = (org) ->
+deepcopy = (org) ->
   copy = {}
   if "table" == type org
     for k, v in next, org, nil
-        copy[deep_copy k] = deep_copy org
-    setmetatable copy, deep_copy getmetatable org
+        copy[deepcopy k] = deepcopy org
+    setmetatable copy, deepcopy getmetatable org
   else
     copy = org
   copy
@@ -45,11 +45,15 @@ cap = (n) ->
     return 1
   n
 
+distance = (a, b) ->
+  math.sqrt (a[1] - b[1])^2 + (a[2] - b[2])^2
+
 {
-  :deep_copy
+  :deepcopy
   :gauss_random
   :randf
   :randi
   :randn
   :cap
+  :distance
 }
