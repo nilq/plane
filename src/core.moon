@@ -18,7 +18,7 @@ plane.load = =>
     .y = 500
     .z = .w
 
-    .env    = ((env.make!\genfood 15, 15)\genheat 4, 4)\genagents 300, .w, .h, .z
+    .env    = ((env.make!\genfood 15, 15)\genheat 4, 4)\genagents 150, .w, .h, .z
     .status = ui.status.make 20, 20
 
 plane.update = (dt) =>
@@ -48,10 +48,41 @@ plane.update = (dt) =>
 
   -- remove deads
   for i = 1, #plane.env.agents
-    continue if not plane.env.agents[i]
+    continue unless plane.env.agents[i]
+    if plane.env.agents[i].health <= 0
+      dying = plane.env.agents[i]
+
+      num_around = 0
+      for j = 0, #plane.env.agents
+        continue if j == i
+
+        agent = plane.env.agents[j]
+
+        if agent.health > 0
+          d = util.distance agent.pos, dying.pos
+
+          if d < 120
+            num_around += 1
+
+      if num_around > 0
+        for j = 0, #plane.env.agents
+          continue if j == i
+
+          agent = plane.env.agents[j]
+
+          d = util.distance agent.pos, dying.pos
+
+          if d < 120
+            agent.health += 3 * (1 - agent.herb) ^ 2 / num_around
+            agent.rep_count -= 2 * (1 - agent.herb) ^ 2 / num_around
+
+            agent.health = 2 if agent.health > 2
+
+  for i = 0, #plane.env.agents
+    continue unless plane.env.agents[i]
     table.remove plane.env.agents, i if plane.env.agents[i].health <= 0
 
-  s = math.abs 400 * ((plane.z + 1000) / 1000)
+  s = math.abs 400 * ((plane.z - 1000) / 1000)
   with love.keyboard
     if .isDown "space"
       plane.z += dt * 400
@@ -89,14 +120,53 @@ plane.draw = =>
       agent     = plane.env.agents[i]
       pos = {plane.x + agent.pos[1], plane.y + agent.pos[2], plane.z - 10}
 
+      for j = -3, 3
+        if j == 0
+          continue
+
+        love.graphics.setColor 200, 200, 200
+
+        eye_pos = {pos[1] + agent.radius * 1.5 * (math.cos agent.angle + j * math.pi / 8), pos[2] + agent.radius * 1.5 * (math.sin agent.angle + j * math.pi / 8), pos[3]}
+
+        .line fov, pos, eye_pos
+
+        love.graphics.setColor 255, 255, 255
+        .circle fov, "fill", eye_pos, 3
+
+        love.graphics.setColor 0, 0, 0
+        .circle fov, "fill", eye_pos, 1
+
+        love.graphics.setColor 100, 100, 100
+        .circle fov, "line", eye_pos, 3
+
+      love.graphics.setColor 200, 200, 200
+
+      eye_pos1 = {pos[1] + agent.radius * 1.5 * (math.cos agent.angle + math.pi + 3 * math.pi / 16), pos[2] + agent.radius * 1.5 * (math.sin agent.angle - math.pi + 3 * math.pi / 16), pos[3]}
+      eye_pos2 = {pos[1] + agent.radius * 1.5 * (math.cos agent.angle + math.pi - 3 * math.pi / 16), pos[2] + agent.radius * 1.5 * (math.sin agent.angle - math.pi - 3 * math.pi / 16), pos[3]}
+
+      .line fov, pos, eye_pos1
+      .line fov, pos, eye_pos2
+
+      love.graphics.setColor 255, 255, 255
+      .circle fov, "fill", eye_pos1, 3
+      .circle fov, "fill", eye_pos2, 3
+
+      love.graphics.setColor 0, 0, 0
+      .circle fov, "fill", eye_pos1, 1
+      .circle fov, "fill", eye_pos2, 1
+
+      love.graphics.setColor 100, 100, 100
+      .circle fov, "line", eye_pos1, 3
+      .circle fov, "line", eye_pos2, 3
+
       love.graphics.setColor agent.color[1], agent.color[2], agent.color[3]
       .circle fov, "fill", pos, 10
 
       love.graphics.setColor 150, 150, 150
       .circle fov, "line", pos, 10
 
-      love.graphics.setColor 0, 0, 0
-      .line fov, pos, {pos[1] + (15 * math.cos agent.angle), pos[2] + (15 * math.sin agent.angle), pos[3] - 5}
+      love.graphics.setColor 255, 100, 100
+      .line fov, pos, {pos[1] + (agent.spike_len * 15 * math.cos agent.angle), pos[2] + (agent.spike_len * 15 * math.sin agent.angle), pos[3] - 5}
 
       love.graphics.setColor agent.color[1], agent.color[2], agent.color[3]
       .circle fov, "fill", {pos[1], pos[2], pos[3] - 10}, 10
@@ -104,14 +174,9 @@ plane.draw = =>
       love.graphics.setColor 150, 150, 150
       .circle fov, "line", {pos[1], pos[2], pos[3] - 10}, 10
 
-      love.graphics.setColor 150, 150, 150
-      .square3d fov, "fill", {pos[1], pos[2] - 15, plane.z - 50}, agent.health * 25, 5
+      love.graphics.setColor agent.health * 255, 0, 0
+      .circle fov, "fill", {pos[1], pos[2], pos[3] - 15}, 5
 
-      love.graphics.setColor 150, 255, 150
-      .square3d fov, "fill", {pos[1], pos[2] - 15, plane.z - 50}, agent.health * 25, 5
-
-      love.graphics.setColor 100, 100, 100
-      .print fov, (string.format "%.1f", agent.health), {pos[1], pos[2] - 15, plane.z - 50}
 
     -- heat fields
     heatlen = #plane.env.heat

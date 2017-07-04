@@ -22,6 +22,7 @@ random = (w, h, z) ->
       [2]: math.random 0, 255
       [3]: math.random 0, 255
     }
+    :radius
   }
 
   with agent
@@ -44,6 +45,8 @@ random = (w, h, z) ->
     .mut_rate1 = 0.003
     .mut_rate2 = 0.05
 
+    .spike_len = 0
+
     .angle = util.randf -math.pi, math.pi
 
     .out = {}
@@ -61,6 +64,26 @@ random = (w, h, z) ->
       @input plane
       @tick!
       @output!
+
+      if plane.count % 2 == 0
+        for i = 1, #plane.env.agents
+          other = plane.env.agents[i]
+          continue if other == @
+
+          d = util.distance @pos, other.pos
+
+          if d < 2 * @radius
+            diff = math.atan2 other.pos[2] - @pos[2], other.pos[1] - @pos[1]
+
+            if math.pi / 8 > math.abs diff
+              mult = 1
+              mult = 2 if @boosting
+
+              dmg = 0.5 * @spike_len * 2 * math.max (math.abs @w1), math.abs @w2
+
+              other.health -= dmg
+
+              @spike_len = 0
 
       -- rep
       if @rep_count < 0 and @health > 0.65
@@ -122,8 +145,6 @@ random = (w, h, z) ->
 
         @health    += itk
         @rep_count -= 3 * itk
-
-        print @rep_count, itk, @herb^2, speed_mul
 
         plane.env.food[cx][cy] -= math.min food, 0.003 -- food waste constant
 
@@ -261,6 +282,12 @@ random = (w, h, z) ->
       @color[1] = @out[3] * 255
       @color[2] = @out[4] * 255
       @color[2] = @out[5] * 255
+
+      g = @out[6]
+      if @spike_len < g
+        @spike_len += 0.05
+      else
+        @spike_len = g
 
       @boosting = @out[7] > .5
 

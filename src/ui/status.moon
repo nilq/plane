@@ -9,7 +9,7 @@ make = (x, y) ->
       .rectangle "fill", @x, @y, 120, 190
 
       .setColor 150, 150, 150
-      .print "#{love.timer.getFPS!} FPS",  @x + 15, @y + 15
+      .print "censored FPS",  @x + 15, @y + 15
 
       .setColor 100, 200, 100
       .print "#{#plane.env.agents} agents",  @x + 15, @y + 40
